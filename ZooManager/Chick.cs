@@ -1,7 +1,7 @@
 ﻿using System;
 using ZooManager;
 
-public class Chick : Bird // Fulfulling (C)
+public class Chick : Bird, IPrey // Fulfulling (C)
 {
     bool matured;
 
@@ -12,6 +12,7 @@ public class Chick : Bird // Fulfulling (C)
         this.name = name;
         reactionTime = new Random().Next(6, 10);
         matured = false; // Have we all grown up yet?
+        isPrey = true;
     }
 
     public override void Activate()

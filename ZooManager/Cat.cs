@@ -2,7 +2,7 @@
 
 namespace ZooManager
 {
-    public class Cat : Animal
+    public class Cat : Animal, IPrey, IPredator
     {
         public Cat(string name)
         {
@@ -11,14 +11,16 @@ namespace ZooManager
             this.name = name;
             reactionTime = new Random().Next(1, 6); // reaction time 1 (fast) to 5 (medium)
             ateLast = 0;
+            isPrey = true;
+            isPredator = true;
         }
 
         public override void Activate()
         {
             base.Activate();
-            Console.WriteLine("I am a cat. Meow.");
-            Flee(); // It will prioritize fleeing over hunting
+            Flee();
             Hunt();
+            Console.WriteLine("I am a cat. Meow.");
             Perish();
         }
 
@@ -43,7 +45,7 @@ namespace ZooManager
             else Hunt();
         }
         */
-        public void Flee() // Fulfilling (E)
+        public void Flee() // Fulfilling (E), and it will prioritize fleeing over hunting
         {
             if (Game.Seek(location.x, location.y, Direction.up, "raptor"))
             {

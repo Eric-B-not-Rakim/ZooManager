@@ -96,6 +96,7 @@ namespace ZooManager
 			if (animalType == "raptor") holdingPen.occupant = new Raptor("EEEAGGLEEEE");
             if (animalType == "chick") holdingPen.occupant = new Chick("bertie rooster");
             if (animalType == "skull") holdingPen.occupant = new Skull("spooky scary skeletons");
+            if (animalType == "alien") holdingPen.occupant = new Alien("* x files theme *");
             Console.WriteLine($"Holding pen occupant at {holdingPen.occupant.location.x},{holdingPen.occupant.location.y}");
             ActivateAnimals();
         }
@@ -117,7 +118,7 @@ namespace ZooManager
                 }
             }
         }
-        static public void ActivateAlive()
+        static public void ActivateAlive() // Adds one more turn to each creature's life
         {
             for (var y = 0; y < numCellsY; y++)
             {
@@ -158,13 +159,42 @@ namespace ZooManager
             return false;
         }
 
+        static public bool AlienSeek(int x, int y, Direction d)
+            // This is super simple. Basically it's the same as the Seek method above,
+            // but instead of looking for a specific target we're looking for anything
+            // that's not another alien. That means skulls, other creatures, etc.
+        {
+            switch (d)
+            {
+                case Direction.up:
+                    y--;
+                    break;
+                case Direction.down:
+                    y++;
+                    break;
+                case Direction.left:
+                    x--;
+                    break;
+                case Direction.right:
+                    x++;
+                    break;
+            }
+            if (y < 0 || x < 0 || y > numCellsY - 1 || x > numCellsX - 1) return false;
+            if (animalZones[y][x].occupant == null) return false;
+            if (animalZones[y][x].occupant.species != "alien")
+            {
+                return true;
+            }
+            return false;
+        }
+
         /* This method currently assumes that the attacker has determined there is prey
          * in the target direction. In addition to bug-proofing our program, can you think
          * of creative ways that NOT just assuming the attack is on the correct target (or
          * successful for that matter) could be used?
          */
 
-        static public void Attack(Animal attacker, Direction d)
+        static public void Attack(Creature attacker, Direction d)
         {
             Console.WriteLine($"{attacker.name} is attacking {d.ToString()}");
             int x = attacker.location.x;
@@ -183,6 +213,57 @@ namespace ZooManager
                     break;
                 case Direction.right:
                     animalZones[y][x + 1].occupant = attacker;
+                    break;
+            }
+            animalZones[y][x].occupant = null;
+        }
+
+        static public bool RaptorSeek(int x, int y, Direction d)
+            // See the Raptor.cs for more information (L)
+        {
+            switch (d)
+            {
+                case Direction.up:
+                    y = y - 2;
+                    break;
+                case Direction.down:
+                    y = y + 2;
+                    break;
+                case Direction.left:
+                    x = x - 2;
+                    break;
+                case Direction.right:
+                    x = x + 2;
+                    break;
+            }
+            if (y < 0 || x < 0 || y > numCellsY - 2 || x > numCellsX - 2) return false;
+            if (animalZones[y][x].occupant == null) return true;
+            if (animalZones[y][x].occupant.species == "")
+            {
+                return true;
+            }
+            return false;
+        }
+
+        static public void RaptorMove(Creature raptor, Direction d)
+            // See the Raptor.cs for more information (L)
+        {
+            int x = raptor.location.x;
+            int y = raptor.location.y;
+
+            switch (d)
+            {
+                case Direction.up:
+                    animalZones[y - 2][x].occupant = raptor;
+                    break;
+                case Direction.down:
+                    animalZones[y + 2][x].occupant = raptor;
+                    break;
+                case Direction.left:
+                    animalZones[y][x - 2].occupant = raptor;
+                    break;
+                case Direction.right:
+                    animalZones[y][x + 2].occupant = raptor;
                     break;
             }
             animalZones[y][x].occupant = null;
